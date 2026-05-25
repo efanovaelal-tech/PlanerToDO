@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12 недель | Личный дневник</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="journal-header">
+        <div>
+          <p class="eyebrow">Личный дневник</p>
+          <a class="brand" href="#" aria-label="Планер 12 недель">12 недель</a>
+        </div>
+        <p class="header-note">Планы, заметки и маленькие шаги</p>
+      </header>
+
+      <main class="planner">
+        <section class="screen paper-card onboarding" id="onboardingScreen" aria-labelledby="welcomeTitle">
+          <div class="screen-copy">
+            <span class="tag">Новый цикл</span>
+            <h1 id="welcomeTitle">Начнем новую главу?</h1>
+            <p class="lead">
+              Определите цель и понятный критерий результата на следующие
+              84 календарных дня.
+            </p>
+          </div>
+
+          <form class="setup-form" id="cycleForm">
+            <label class="field compact">
+              <span>Дата старта</span>
+              <input type="date" id="cycleStartDate" name="cycleStartDate" required>
+            </label>
+
+            <label class="field">
+              <span>Основная цель</span>
+              <input
+                type="text"
+                id="cycleGoal"
+                name="cycleGoal"
+                maxlength="120"
+                placeholder="Например, завершить портфолио"
+                required
+              >
+            </label>
+
+            <label class="field">
+              <span>Критерий успеха</span>
+              <textarea
+                id="successCriterion"
+                name="successCriterion"
+                rows="3"
+                maxlength="180"
+                placeholder="Как вы поймете, что цель достигнута?"
+                required
+              ></textarea>
+            </label>
+
+            <button class="primary-button" type="submit">Начать цикл</button>
+          </form>
+        </section>
+
+        <section class="screen dashboard hidden" id="dashboardScreen" aria-labelledby="dashboardTitle">
+          <div class="paper-card dashboard-intro">
+            <div class="dashboard-copy">
+              <span class="tag">Активный цикл</span>
+              <p class="card-label">Основная цель</p>
+              <h1 class="cycle-goal" id="dashboardTitle"></h1>
+              <p class="lead">
+                Критерий успеха: <strong id="activeSuccessCriterion"></strong>
+              </p>
+            </div>
+            <div class="dashboard-actions">
+              <button class="text-button" type="button" id="exportButton">
+                Экспорт JSON
+              </button>
+              <button class="text-button" type="button" id="importButton">
+                Импорт JSON
+              </button>
+              <input class="visually-hidden" type="file" id="importFile" accept="application/json,.json">
+              <button class="text-button" type="button" id="finishCycleButton">
+                Завершить цикл
+              </button>
+            </div>
+          </div>
+
+          <div class="dashboard-metrics" aria-label="Прогресс цикла">
+            <article class="paper-card metric-card">
+              <p class="card-label">Дата окончания</p>
+              <p class="metric-value" id="cycleEndDate"></p>
+            </article>
+            <article class="paper-card metric-card">
+              <p class="card-label">Текущий день</p>
+              <p class="metric-value"><span id="currentDay">1</span> <small>из 84</small></p>
+            </article>
+            <article class="paper-card metric-card">
+              <p class="card-label">Текущая неделя</p>
+              <p class="metric-value"><span id="currentWeek">1</span> <small>из 12</small></p>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <article class="paper-card progress-card">
+              <div class="progress-heading">
+                <p class="card-label">Прогресс цикла</p>
+                <span class="progress-percent" id="progressPercent">0%</span>
+              </div>
+              <div
+                class="progress-track"
+                role="progressbar"
+                id="cycleProgress"
+                aria-label="Прогресс цикла"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+              >
+                <span class="progress-fill" id="progressFill"></span>
+              </div>
+              <p class="progress-note" id="cycleDates"></p>
+            </article>
+
+            <article class="paper-card weekly-focus-card">
+              <label class="field" for="weeklyFocus">
+                <span class="card-label">Недельный фокус</span>
+                <textarea
+                  id="weeklyFocus"
+                  name="weeklyFocus"
+                  rows="3"
+                  maxlength="240"
+                  placeholder="Самый важный результат этой недели"
+                ></textarea>
+              </label>
+              <p class="save-status" id="focusSaveStatus" aria-live="polite">
+                Сохраняется автоматически
+              </p>
+            </article>
+          </div>
+
+          <section class="tasks-section" aria-labelledby="tasksTitle">
+            <div class="paper-card tasks-toolbar">
+              <div>
+                <p class="card-label">План дня</p>
+                <h2 id="tasksTitle">Задачи на день</h2>
+                <div class="day-heading">
+                  <p class="tasks-note" id="selectedDateNote"></p>
+                  <span class="day-status" id="dayStatus"></span>
+                </div>
+              </div>
+              <div class="day-picker-panel">
+                <div class="day-navigation" aria-label="Навигация по дням">
+                  <button class="navigation-button" type="button" id="previousDayButton">
+                    &larr; Влево
+                  </button>
+                  <button class="navigation-button today-button" type="button" id="todayButton">
+                    Сегодня
+                  </button>
+                  <button class="navigation-button" type="button" id="nextDayButton">
+                    Вправо &rarr;
+                  </button>
+                </div>
+                <label class="field date-picker">
+                  <span>Выбранная дата</span>
+                  <input type="date" id="selectedDate" name="selectedDate">
+                </label>
+              </div>
+            </div>
+
+            <p class="paper-card empty-day-message hidden" id="emptyDayMessage">
+              На этот день пока ничего не записано
+            </p>
+
+            <div class="task-columns">
+              <article class="paper-card task-column">
+                <h3>Ресурс</h3>
+                <form class="task-form" data-category="resource">
+                  <label class="visually-hidden" for="resourceTask">Новая задача: Ресурс</label>
+                  <input
+                    type="text"
+                    id="resourceTask"
+                    name="taskText"
+                    maxlength="180"
+                    placeholder="Добавить задачу..."
+                    required
+                  >
+                  <button type="submit" aria-label="Добавить задачу в категорию Ресурс">+</button>
+                </form>
+                <ul class="task-list" id="resourceTaskList"></ul>
+              </article>
+
+              <article class="paper-card task-column">
+                <h3>Социум</h3>
+                <form class="task-form" data-category="social">
+                  <label class="visually-hidden" for="socialTask">Новая задача: Социум</label>
+                  <input
+                    type="text"
+                    id="socialTask"
+                    name="taskText"
+                    maxlength="180"
+                    placeholder="Добавить задачу..."
+                    required
+                  >
+                  <button type="submit" aria-label="Добавить задачу в категорию Социум">+</button>
+                </form>
+                <ul class="task-list" id="socialTaskList"></ul>
+              </article>
+
+              <article class="paper-card task-column">
+                <h3>Проект</h3>
+                <form class="task-form" data-category="project">
+                  <label class="visually-hidden" for="projectTask">Новая задача: Проект</label>
+                  <input
+                    type="text"
+                    id="projectTask"
+                    name="taskText"
+                    maxlength="180"
+                    placeholder="Добавить задачу..."
+                    required
+                  >
+                  <button type="submit" aria-label="Добавить задачу в категорию Проект">+</button>
+                </form>
+                <ul class="task-list" id="projectTaskList"></ul>
+              </article>
+            </div>
+          </section>
+
+          <section class="paper-card habits-card" aria-labelledby="habitsTitle">
+            <div class="habits-heading">
+              <div>
+                <p class="card-label">Ритм дня</p>
+                <h2 id="habitsTitle">Привычки</h2>
+                <p class="tasks-note" id="habitsDateNote"></p>
+              </div>
+              <form class="habit-form" id="habitForm">
+                <label class="visually-hidden" for="habitName">Новая привычка</label>
+                <input
+                  type="text"
+                  id="habitName"
+                  name="habitName"
+                  maxlength="80"
+                  placeholder="Добавить привычку..."
+                  required
+                >
+                <button class="primary-button" type="submit">Добавить</button>
+              </form>
+            </div>
+            <ul class="habits-list" id="habitsList"></ul>
+          </section>
+
+          <section class="paper-card weekly-stats-card" aria-labelledby="weeklyStatsTitle">
+            <div class="stats-heading">
+              <div>
+                <p class="card-label">Итоги недели</p>
+                <h2 id="weeklyStatsTitle">Статистика</h2>
+                <p class="tasks-note" id="statsWeekRange"></p>
+              </div>
+              <span class="stats-week" id="statsWeekNumber"></span>
+            </div>
+            <div class="stats-grid">
+              <article class="stat-item">
+                <p class="card-label">Задачи</p>
+                <p class="stat-score" id="taskScore">нет данных</p>
+                <p class="stat-note" id="taskScoreNote"></p>
+              </article>
+              <article class="stat-item">
+                <p class="card-label">Привычки</p>
+                <p class="stat-score" id="habitScore">нет данных</p>
+                <p class="stat-note" id="habitScoreNote"></p>
+              </article>
+            </div>
+          </section>
+
+          <section class="paper-card reflection-card" aria-labelledby="weeklyReflectionTitle">
+            <div class="reflection-heading">
+              <div>
+                <p class="card-label">Запись недели</p>
+                <h2 id="weeklyReflectionTitle">Недельная рефлексия</h2>
+              </div>
+              <span class="stats-week" id="reflectionWeekNumber"></span>
+            </div>
+            <form class="reflection-form" id="weeklyReflectionForm">
+              <label class="field">
+                <span>Что получилось</span>
+                <textarea
+                  id="reflectionWins"
+                  name="reflectionWins"
+                  rows="3"
+                  maxlength="600"
+                  placeholder="Что удалось сделать хорошо?"
+                ></textarea>
+              </label>
+              <label class="field">
+                <span>Выводы</span>
+                <textarea
+                  id="reflectionLessons"
+                  name="reflectionLessons"
+                  rows="3"
+                  maxlength="600"
+                  placeholder="Что взять с собой в следующую неделю?"
+                ></textarea>
+              </label>
+            </form>
+            <p class="save-status" id="reflectionSaveStatus" aria-live="polite">
+              Сохраняется автоматически
+            </p>
+          </section>
+
+          <div class="modal-backdrop hidden" id="taskChecklistModal">
+            <section
+              class="paper-card checklist-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="checklistTitle"
+            >
+              <p class="card-label">Перед сохранением</p>
+              <h2 id="checklistTitle">Задача конкретна?</h2>
+              <p class="pending-task" id="pendingTaskText"></p>
+              <ol class="checklist">
+                <li>Понятно, какое конкретное действие нужно сделать?</li>
+                <li>Можно однозначно понять, когда задача выполнена?</li>
+                <li>Задачу реально выполнить в выбранный день?</li>
+              </ol>
+              <div class="modal-actions">
+                <button class="text-button" type="button" id="cancelTaskButton">Вернуться</button>
+                <button class="primary-button" type="button" id="saveTaskButton">
+                  Сохранить задачу
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <div class="modal-backdrop hidden" id="taskEditModal">
+            <form
+              class="paper-card task-edit-modal"
+              id="taskEditForm"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="taskEditTitle"
+            >
+              <p class="card-label">Изменить задачу</p>
+              <h2 id="taskEditTitle">Переформулировать или перенести</h2>
+              <label class="field">
+                <span>Новая формулировка</span>
+                <textarea id="editedTaskText" name="editedTaskText" rows="3" maxlength="180" required></textarea>
+              </label>
+              <label class="field compact">
+                <span>Дата выполнения</span>
+                <input type="date" id="editedTaskDate" name="editedTaskDate" required>
+              </label>
+              <div class="modal-actions">
+                <button class="text-button" type="button" id="cancelTaskEditButton">Отмена</button>
+                <button class="primary-button" type="submit">Сохранить изменения</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="screen completion hidden" id="completionScreen" aria-labelledby="completionTitle">
+          <article class="paper-card completion-card">
+            <span class="tag">Цикл завершен</span>
+            <h1 id="completionTitle">Двенадцать недель позади</h1>
+            <p class="lead">
+              Подведите итог пройденного пути и сохраните эту главу в архиве.
+            </p>
+
+            <div class="completion-stats" aria-label="Средняя статистика цикла">
+              <div class="stat-item">
+                <p class="card-label">Среднее по задачам</p>
+                <p class="stat-score" id="finalTaskScore">нет данных</p>
+                <p class="stat-note" id="finalTaskScoreNote"></p>
+              </div>
+              <div class="stat-item">
+                <p class="card-label">Среднее по привычкам</p>
+                <p class="stat-score" id="finalHabitScore">нет данных</p>
+                <p class="stat-note" id="finalHabitScoreNote"></p>
+              </div>
+            </div>
+
+            <label class="field final-reflection">
+              <span>Итоговая рефлексия</span>
+              <textarea
+                id="finalReflection"
+                name="finalReflection"
+                rows="5"
+                maxlength="1200"
+                placeholder="Что изменилось за эти 12 недель?"
+              ></textarea>
+            </label>
+            <p class="save-status" id="finalReflectionSaveStatus" aria-live="polite">
+              Сохраняется автоматически
+            </p>
+
+            <div class="completion-actions">
+              <button class="text-button" type="button" id="archiveCycleButton">
+                Завершить цикл
+              </button>
+              <button class="primary-button" type="button" id="startNewCycleButton">
+                Начать новый
+              </button>
+            </div>
+          </article>
+        </section>
+
+        <aside class="paper-card storage-card" aria-labelledby="storageTitle">
+          <div class="card-heading">
+            <div>
+              <p class="card-label">Самопроверка</p>
+              <h2 id="storageTitle">Состояние дневника</h2>
+            </div>
+            <span class="storage-indicator" id="storageIndicator">localStorage</span>
+          </div>
+          <p class="storage-help" id="storageMessage">
+            При первом открытии здесь появится базовая схема данных.
+          </p>
+          <pre id="storagePreview" aria-live="polite"></pre>
+        </aside>
+      </main>
+    </div>
+  </body>
+</html>
