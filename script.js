@@ -31,6 +31,11 @@
     cycleDates: document.querySelector("#cycleDates"),
     weeklyFocus: document.querySelector("#weeklyFocus"),
     focusSaveStatus: document.querySelector("#focusSaveStatus"),
+    overviewWeekRange: document.querySelector("#overviewWeekRange"),
+    overviewWeekNumber: document.querySelector("#overviewWeekNumber"),
+    previousWeekButton: document.querySelector("#previousWeekButton"),
+    nextWeekButton: document.querySelector("#nextWeekButton"),
+    weekDays: document.querySelector("#weekDays"),
     selectedDate: document.querySelector("#selectedDate"),
     selectedDateNote: document.querySelector("#selectedDateNote"),
     dayStatus: document.querySelector("#dayStatus"),
@@ -355,6 +360,16 @@
     });
   }
 
+  function formatOverviewWeekday(value) {
+    const date = new Date(`${value}T00:00:00`);
+    return date.toLocaleDateString("ru-RU", { weekday: "short" }).replace(".", "");
+  }
+
+  function formatOverviewDate(value) {
+    const date = new Date(`${value}T00:00:00`);
+    return date.toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
+  }
+
   function createCycleId() {
     if (window.crypto && typeof window.crypto.randomUUID === "function") {
       return window.crypto.randomUUID();
@@ -433,6 +448,69 @@
 
   function renderStoragePreview() {
     elements.storagePreview.textContent = JSON.stringify(appData, null, 2);
+  }
+
+  function renderWeekOverview(cycle) {
+    const { weekNumber, weekStart, weekEnd } = calculateViewedWeek(cycle);
+    const activeHabits = cycle.habits.filter((habit) => habit.isActive);
+    const today = formatDateForInput(new Date());
+
+    elements.overviewWeekNumber.textContent = `${weekNumber}-я неделя`;
+    elements.overviewWeekRange.textContent =
+      `${formatReadableDate(weekStart)} - ${formatReadableDate(weekEnd)}`;
+    elements.previousWeekButton.disabled = weekNumber <= 1;
+    elements.nextWeekButton.disabled = weekNumber >= TOTAL_WEEKS;
+    elements.weekDays.replaceChildren();
+
+    for (let date = weekStart; date <= weekEnd; date = addCalendarDays(date, 1)) {
+      const tasks = cycle.tasks.filter((task) => task.date === date);
+      const completedTasks = tasks.filter((task) => task.status === "completed").length;
+      const completedHabits = activeHabits.filter((habit) => habit.checks[date] === true).length;
+      const isSelected = date === cycle.selectedDate;
+      const isToday = date === today;
+      const isFuture = date > today;
+      const isComplete =
+        !isFuture &&
+        tasks.length > 0 &&
+        completedTasks === tasks.length &&
+        (activeHabits.length === 0 || completedHabits === activeHabits.length);
+      const button = document.createElement("button");
+      const weekday = document.createElement("span");
+      const dayDate = document.createElement("span");
+      const summary = document.createElement("span");
+      const taskSummary = document.createElement("span");
+      const habitSummary = document.createElement("span");
+
+      button.type = "button";
+      button.className = [
+        "week-day",
+        isSelected ? "selected" : "",
+        isToday ? "today" : "",
+        isFuture ? "future" : "",
+        isComplete ? "complete" : ""
+      ].filter(Boolean).join(" ");
+      button.dataset.date = date;
+      button.setAttribute(
+        "aria-label",
+        `${formatReadableDate(date)}. Задачи: ${completedTasks} из ${tasks.length}. ` +
+          `Привычки: ${completedHabits} из ${activeHabits.length}.`
+      );
+
+      if (isSelected) {
+        button.setAttribute("aria-current", "date");
+      }
+
+      weekday.className = "week-day-name";
+      weekday.textContent = formatOverviewWeekday(date);
+      dayDate.className = "week-day-date";
+      dayDate.textContent = formatOverviewDate(date);
+      summary.className = "week-day-summary";
+      taskSummary.textContent = `Задачи ${completedTasks}/${tasks.length}`;
+      habitSummary.textContent = `Привычки ${completedHabits}/${activeHabits.length}`;
+      summary.append(taskSummary, habitSummary);
+      button.append(weekday, dayDate, summary);
+      elements.weekDays.append(button);
+    }
   }
 
   function renderDayHeader(cycle) {
@@ -672,6 +750,7 @@
   }
 
   function renderSelectedDay(cycle) {
+    renderWeekOverview(cycle);
     renderDayHeader(cycle);
     renderTasks(cycle);
     renderHabits(cycle);
@@ -952,6 +1031,52 @@
     }
 
     activeCycle.selectedDate = getCycleDateForToday(activeCycle);
+    persistData(appData);
+    renderSelectedDay(activeCycle);
+    renderStoragePreview();
+  });
+
+  elements.previousWeekButton.addEventListener("click", () => {
+    const activeCycle = getActiveCycle();
+    const { weekNumber } = activeCycle ? calculateViewedWeek(activeCycle) : { weekNumber: 1 };
+
+    if (!activeCycle || weekNumber <= 1) {
+      return;
+    }
+
+    activeCycle.selectedDate = addCalendarDays(activeCycle.selectedDate, -7);
+    persistData(appData);
+    renderSelectedDay(activeCycle);
+    renderStoragePreview();
+  });
+
+  elements.nextWeekButton.addEventListener("click", () => {
+    const activeCycle = getActiveCycle();
+    const { weekNumber } = activeCycle ? calculateViewedWeek(activeCycle) : { weekNumber: TOTAL_WEEKS };
+
+    if (!activeCycle || weekNumber >= TOTAL_WEEKS) {
+      return;
+    }
+
+    activeCycle.selectedDate = addCalendarDays(activeCycle.selectedDate, 7);
+    persistData(appData);
+    renderSelectedDay(activeCycle);
+    renderStoragePreview();
+  });
+
+  elements.weekDays.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-date]");
+    const activeCycle = getActiveCycle();
+
+    if (!button || !activeCycle) {
+      return;
+    }
+
+    activeCycle.selectedDate = clampDateToCycle(
+      button.dataset.date,
+      activeCycle.startDate,
+      activeCycle.endDate
+    );
     persistData(appData);
     renderSelectedDay(activeCycle);
     renderStoragePreview();

@@ -90,6 +90,28 @@
                 Завершить цикл
               </button>
             </div>
+            <section class="intro-stats" aria-labelledby="weeklyStatsTitle">
+              <div class="stats-heading">
+                <div>
+                  <p class="card-label">Итоги недели</p>
+                  <h2 id="weeklyStatsTitle">Статистика</h2>
+                  <p class="tasks-note" id="statsWeekRange"></p>
+                </div>
+                <span class="stats-week" id="statsWeekNumber"></span>
+              </div>
+              <div class="stats-grid">
+                <article class="stat-item">
+                  <p class="card-label">Задачи</p>
+                  <p class="stat-score" id="taskScore">нет данных</p>
+                  <p class="stat-note" id="taskScoreNote"></p>
+                </article>
+                <article class="stat-item">
+                  <p class="card-label">Привычки</p>
+                  <p class="stat-score" id="habitScore">нет данных</p>
+                  <p class="stat-note" id="habitScoreNote"></p>
+                </article>
+              </div>
+            </section>
           </div>
 
           <div class="dashboard-metrics" aria-label="Прогресс цикла">
@@ -143,6 +165,28 @@
               </p>
             </article>
           </div>
+
+          <section class="paper-card week-overview-card" aria-labelledby="weekOverviewTitle">
+            <div class="week-overview-heading">
+              <div>
+                <p class="card-label">Обзор недели</p>
+                <h2 id="weekOverviewTitle">Недельный обзор</h2>
+                <p class="tasks-note" id="overviewWeekRange"></p>
+              </div>
+              <div class="week-overview-controls">
+                <span class="stats-week" id="overviewWeekNumber"></span>
+                <div class="week-navigation" aria-label="Навигация по неделям">
+                  <button class="navigation-button" type="button" id="previousWeekButton">
+                    &larr; Неделя
+                  </button>
+                  <button class="navigation-button" type="button" id="nextWeekButton">
+                    Неделя &rarr;
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="week-days" id="weekDays" aria-label="Дни выбранной недели"></div>
+          </section>
 
           <section class="tasks-section" aria-labelledby="tasksTitle">
             <div class="paper-card tasks-toolbar">
@@ -252,29 +296,6 @@
               </form>
             </div>
             <ul class="habits-list" id="habitsList"></ul>
-          </section>
-
-          <section class="paper-card weekly-stats-card" aria-labelledby="weeklyStatsTitle">
-            <div class="stats-heading">
-              <div>
-                <p class="card-label">Итоги недели</p>
-                <h2 id="weeklyStatsTitle">Статистика</h2>
-                <p class="tasks-note" id="statsWeekRange"></p>
-              </div>
-              <span class="stats-week" id="statsWeekNumber"></span>
-            </div>
-            <div class="stats-grid">
-              <article class="stat-item">
-                <p class="card-label">Задачи</p>
-                <p class="stat-score" id="taskScore">нет данных</p>
-                <p class="stat-note" id="taskScoreNote"></p>
-              </article>
-              <article class="stat-item">
-                <p class="card-label">Привычки</p>
-                <p class="stat-score" id="habitScore">нет данных</p>
-                <p class="stat-note" id="habitScoreNote"></p>
-              </article>
-            </div>
           </section>
 
           <section class="paper-card reflection-card" aria-labelledby="weeklyReflectionTitle">

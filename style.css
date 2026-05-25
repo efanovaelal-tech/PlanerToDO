@@ -271,9 +271,9 @@ h1 {
 }
 
 .dashboard-intro {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 24px;
   padding: clamp(25px, 4vw, 39px) clamp(26px, 5vw, 48px);
 }
@@ -309,6 +309,17 @@ h1 {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 9px;
+}
+
+.intro-stats {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.72fr) minmax(340px, 1fr);
+  grid-column: 1 / -1;
+  align-items: start;
+  gap: clamp(22px, 4vw, 36px);
+  margin-top: 5px;
+  border-top: 1px solid var(--line);
+  padding-top: clamp(20px, 4vw, 28px);
 }
 
 .text-button {
@@ -440,6 +451,102 @@ h1 {
   margin: 12px 0 0;
   color: var(--ink-soft);
   font-size: 0.8rem;
+}
+
+.week-overview-card {
+  padding: clamp(22px, 4vw, 31px);
+}
+
+.week-overview-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 22px;
+  margin-bottom: 24px;
+}
+
+.week-overview-heading h2 {
+  margin: 0 0 7px;
+  color: var(--accent-dark);
+  font-family: var(--handwritten);
+  font-size: clamp(2.1rem, 5vw, 2.65rem);
+  line-height: 1;
+}
+
+.week-overview-controls {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.week-navigation {
+  display: flex;
+  gap: 7px;
+}
+
+.week-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.week-day {
+  display: grid;
+  gap: 9px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 13px 11px 12px;
+  background: rgba(255, 251, 242, 0.48);
+  color: var(--ink);
+  text-align: left;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.week-day:hover {
+  border-color: rgba(133, 96, 72, 0.38);
+  background: rgba(133, 96, 72, 0.07);
+}
+
+.week-day.selected {
+  border-color: rgba(133, 96, 72, 0.55);
+  background: rgba(133, 96, 72, 0.12);
+}
+
+.week-day.today .week-day-date {
+  color: #536745;
+}
+
+.week-day.future {
+  color: var(--ink-soft);
+}
+
+.week-day.complete {
+  border-color: rgba(83, 103, 69, 0.3);
+}
+
+.week-day-name {
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.week-day-date {
+  color: var(--accent-dark);
+  font-family: var(--handwritten);
+  font-size: clamp(1.65rem, 3vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.week-day-summary {
+  display: grid;
+  gap: 4px;
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+  line-height: 1.35;
 }
 
 .tasks-section {
@@ -806,10 +913,6 @@ h1 {
   font-size: 0.78rem;
 }
 
-.weekly-stats-card {
-  padding: clamp(22px, 4vw, 31px);
-}
-
 .stats-heading {
   display: flex;
   align-items: start;
@@ -824,6 +927,10 @@ h1 {
   font-family: var(--handwritten);
   font-size: clamp(2.1rem, 5vw, 2.65rem);
   line-height: 1;
+}
+
+.intro-stats .stats-heading {
+  margin-bottom: 0;
 }
 
 .stats-week {
@@ -1029,6 +1136,7 @@ h1 {
   .onboarding,
   .dashboard-metrics,
   .dashboard-grid,
+  .intro-stats,
   .reflection-form,
   .completion-stats {
     grid-template-columns: 1fr;
@@ -1040,6 +1148,10 @@ h1 {
 
   .task-columns {
     grid-template-columns: 1fr;
+  }
+
+  .week-days {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .task-column {
@@ -1068,10 +1180,10 @@ h1 {
   .metric-card,
   .progress-card,
   .weekly-focus-card,
+  .week-overview-card,
   .tasks-toolbar,
   .task-column,
   .habits-card,
-  .weekly-stats-card,
   .reflection-card,
   .completion-card,
   .storage-card {
@@ -1092,11 +1204,30 @@ h1 {
 
   .dashboard-intro {
     display: grid;
+    grid-template-columns: 1fr;
   }
 
   .dashboard-actions,
   .completion-actions {
     display: grid;
+  }
+
+  .week-overview-heading,
+  .week-overview-controls {
+    display: grid;
+  }
+
+  .week-days {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .week-day:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .week-navigation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .tasks-toolbar {
